@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, Field, model_validator
 
 PlanName = Literal["Pro", "Max", "Enterprise"]
 
@@ -9,7 +9,7 @@ PlanName = Literal["Pro", "Max", "Enterprise"]
 class ClientIn(BaseModel):
     name: str
     plan: PlanName
-    seats: int
+    seats: int = Field(ge=1)
     contact_email: str | None = None
 
 
