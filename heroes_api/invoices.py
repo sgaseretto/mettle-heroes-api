@@ -30,7 +30,7 @@ def month_bounds(month: str) -> tuple[str, str]:
 def missions_in_month(conn: sqlite3.Connection, client_id: int, month: str) -> list[dict]:
     first, next_first = month_bounds(month)
     rows = conn.execute(
-        BOOKING_QUERY + " WHERE b.client_id = ? AND b.start >= ? AND date(b.start) <= ? ORDER BY b.start",
+        BOOKING_QUERY + " WHERE b.client_id = ? AND b.start >= ? AND b.start < ? ORDER BY b.start",
         (client_id, first, next_first),
     ).fetchall()
     return [to_dict(row) for row in rows]
