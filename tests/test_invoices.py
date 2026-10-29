@@ -54,3 +54,23 @@ def test_invoice_uses_the_current_tier(client, harbour_council):
 
     assert body["price_per_seat"] == 28_000
     assert body["total"] == 280_000
+
+
+def test_invoice_excludes_mission_starting_on_first_of_next_month(client, harbour_council):
+    client.post(
+        "/bookings",
+        json={
+            "client_id": harbour_council["id"],
+            "hero": "Ballast",
+            "start": "2026-08-01T09:00",
+            "end": "2026-08-01T11:00",
+            "mission": "Drain the fete field",
+        },
+    )
+
+    july = client.get(f"/clients/{harbour_council['id']}/invoices/2026-07").json()
+    august = client.get(f"/clients/{harbour_council['id']}/invoices/2026-08").json()
+
+    assert july["missions"] == []
+    assert july["hero_hours"] == 0
+    assert [m["mission"] for m in august["missions"]] == ["Drain the fete field"]
