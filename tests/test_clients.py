@@ -39,3 +39,18 @@ def test_change_tier_for_missing_client_returns_404(client):
     response = client.post("/clients/999/tier", json={"plan": "Max"})
 
     assert response.status_code == 404
+
+
+def test_create_client_rejects_fewer_than_one_seat(client):
+    for seats in (0, -2):
+        response = client.post("/clients", json={"name": "Saltgrave Stadium", "plan": "Pro", "seats": seats})
+
+        assert response.status_code == 422
+
+    assert client.get("/clients").json() == []
+
+
+def test_create_client_accepts_a_single_seat(client):
+    response = client.post("/clients", json={"name": "Saltgrave Stadium", "plan": "Pro", "seats": 1})
+
+    assert response.status_code == 201
